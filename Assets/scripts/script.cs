@@ -8,14 +8,15 @@ public class script : MonoBehaviour
 {
     public static int scoreValue = 0;
     public GUIStyle puanStili;
-    private int skor = 0, bonusskor = 0, totalskor = 0, timercontroller = 0, startcontroller = 0, freezecontrol = 1;
+    public GUIStyle bonusStili;
+    private int skor = 0, bonusskor = 0, timercontroller = 0, startcontroller = 0, freezecontrol = 1, bonustimer=0;
     SerialPort sp = new SerialPort("COM3", 9600);
     public float zaman = 5, prevshot = 0, start = 3, farksure = 0, verilen, freeze = 10;
     
     public Text bonus;
     public GameObject bns;
     public Text timing;
-    private int counter = 0;
+
 
     
     void Start()
@@ -31,7 +32,10 @@ public class script : MonoBehaviour
     void Update()
     {
 
-
+        if (bonustimer==1)
+        {
+            bonusStili.normal.textColor = new Color(0, 0, 0, 0);
+        }
 
 
         if (freezecontrol == 1)
@@ -56,6 +60,7 @@ public class script : MonoBehaviour
                 bonusskor = 0;
                 start = 3;
                 freezecontrol = 1;
+                freeze = 10;
             }
 
         }
@@ -69,24 +74,32 @@ public class script : MonoBehaviour
             {
                 timing.text = zaman.ToString("f0");
             }
-
+            
             if (seriDeger == 1)
             {
                 
                 skor += 100;
                  bns.SetActive(false);
-
+                
                 farksure = prevshot - zaman;
                 if (farksure > 0 && farksure < 1)
                 {
-
+                   
                     bns.SetActive(true);
                     bonus.text = "Bonus:+25";
+                    bonusStili.normal.textColor = Color.green;
+                    bonustimer = 1;
                     skor += 25;
                     
                 }
-                prevshot = zaman;
                 
+                prevshot = zaman;
+
+            }
+
+            if (zaman-prevshot==2)
+            {
+                bonustimer = 0;
             }
 
         }
@@ -114,6 +127,7 @@ public class script : MonoBehaviour
     private void OnGUI()
     {
         GUI.Label(new Rect(0, 0, Screen.width, 100), skor + "", puanStili);
+        GUI.Label(new Rect(0, 0, Screen.width, 200),"+25", bonusStili);
 
     }
 }
